@@ -1,0 +1,6 @@
+_subdirectory: template
+
+node_version:
+  type: str
+  help: Which nodejs version you want to use?
+  default: "22"
