@@ -24,6 +24,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   nano \
   vim \
   chromium \
+{%- if enable_python_uv %}
+  python3 \
+  python3-venv \
+{%- endif %}
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Ensure default node user has access to /usr/local/share
@@ -53,12 +57,18 @@ RUN ARCH=$(dpkg --print-architecture) && \
   sudo dpkg -i "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
   rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"
 
+{%- if enable_pnpm %}
+
+# Enable corepack and prepare pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+{%- endif %}
+
 # Set up non-root user
 USER node
 
 # Install global packages
 ENV NPM_CONFIG_PREFIX=/usr/local/share/npm-global
-ENV PATH=$HOME/.claude/bin:$PATH:/usr/local/share/npm-global/bin
+ENV PATH=$HOME/.local/bin:$PATH:/usr/local/share/npm-global/bin
 
 # Set the default shell to zsh rather than sh
 ENV SHELL=/bin/zsh
@@ -94,3 +104,8 @@ ENV CHROME_PATH=/usr/bin/chromium
 ENV CHROMIUM_FLAGS="--no-sandbox --disable-gpu --disable-dev-shm-usage"
 
 USER node
+{%- if enable_python_uv %}
+
+# Install UV package manager
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+{%- endif %}

@@ -9,3 +9,13 @@ enable_docker_in_docker:
   type: bool
   help: Enable Docker-in-Docker support (docker build, docker compose inside the devcontainer)?
   default: false
+
+enable_python_uv:
+  type: bool
+  help: Enable Python UV setup (installs Python3, python3-venv, and UV package manager)?
+  default: false
+
+enable_pnpm:
+  type: bool
+  help: Enable JavaScript pnpm setup (enables corepack and prepares pnpm)?
+  default: false

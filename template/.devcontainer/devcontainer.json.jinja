@@ -20,7 +20,8 @@
 				"anthropic.claude-code",
 				"dbaeumer.vscode-eslint",
 				"esbenp.prettier-vscode",
-				"eamodio.gitlens"
+				"eamodio.gitlens"{% if enable_python_uv %},
+				"ms-python.python"{% endif %}
 			],
 			"settings": {
 				"editor.formatOnSave": true,
