@@ -4,3 +4,8 @@ node_version:
   type: str
   help: Which nodejs version you want to use?
   default: "22"
+
+enable_docker_in_docker:
+  type: bool
+  help: Enable Docker-in-Docker support (docker build, docker compose inside the devcontainer)?
+  default: false
