@@ -11,6 +11,7 @@ echo "Installing OpenCode..."
 curl -fsSL https://opencode.ai/install | bash
 
 echo "Configuring Chrome DevTools MCP server..."
+claude mcp remove chrome-devtools 2>/dev/null || true
 claude mcp add chrome-devtools -- npx -y chrome-devtools-mcp@latest
 
 echo "Enabling remote control for all sessions..."
