@@ -1,18 +1,34 @@
 #!/bin/bash
 set -euo pipefail
 
-# Ensure ~/.local/bin is on PATH for this script
+# Ensure ~/.local/bin exists and is on PATH
+mkdir -p "$HOME/.local/bin"
 export PATH="$HOME/.local/bin:$PATH"
 
+TMPDIR=$(mktemp -d)
+trap 'rm -rf "$TMPDIR"' EXIT
+
 echo "Installing Claude Code (native)..."
-curl -fsSL https://claude.ai/install.sh | bash
+if curl -fsSL -o "$TMPDIR/claude-install.sh" https://claude.ai/install.sh; then
+    bash "$TMPDIR/claude-install.sh"
+else
+    echo "WARNING: Failed to download Claude Code installer, skipping"
+fi
 
 echo "Installing OpenCode..."
-curl -fsSL https://opencode.ai/install | bash
+if curl -fsSL -o "$TMPDIR/opencode-install.sh" https://opencode.ai/install; then
+    bash "$TMPDIR/opencode-install.sh"
+else
+    echo "WARNING: Failed to download OpenCode installer, skipping"
+fi
 
-echo "Configuring Chrome DevTools MCP server..."
-claude mcp remove chrome-devtools 2>/dev/null || true
-claude mcp add chrome-devtools -- npx -y chrome-devtools-mcp@latest
+if command -v claude &>/dev/null; then
+    echo "Configuring Chrome DevTools MCP server..."
+    claude mcp remove chrome-devtools 2>/dev/null || true
+    claude mcp add chrome-devtools -- npx -y chrome-devtools-mcp@latest
+else
+    echo "WARNING: claude CLI not found, skipping MCP configuration"
+fi
 
 echo "Enabling remote control for all sessions..."
 mkdir -p ~/.claude

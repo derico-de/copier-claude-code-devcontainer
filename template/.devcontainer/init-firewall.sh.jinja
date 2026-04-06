@@ -1,8 +1,24 @@
 #!/bin/bash
 set -euo pipefail  # Exit on error, undefined vars, and pipeline failures
 IFS=$'\n\t'       # Stricter word splitting
+{%- if enable_docker_in_docker %}
+
+# Wait for Docker daemon to be ready (docker-in-docker feature starts it async)
+echo "Waiting for Docker daemon to be ready..."
+for i in $(seq 1 30); do
+    if docker info &>/dev/null; then
+        echo "Docker daemon is ready"
+        break
+    fi
+    if [ "$i" -eq 30 ]; then
+        echo "WARNING: Docker daemon not ready after 30s, proceeding anyway"
+    fi
+    sleep 1
+done
+{%- endif %}
 
 {%- if enable_docker_in_docker %}
+
 # Save entire nat table BEFORE flushing (Docker needs it for DinD networking)
 SAVED_NAT=$(iptables-save -t nat)
 {%- else %}
@@ -89,7 +105,7 @@ while read -r cidr; do
         exit 1
     fi
     echo "Adding GitHub range $cidr"
-    ipset add allowed-domains "$cidr"
+    ipset add allowed-domains "$cidr" 2>/dev/null || true
 done < <(echo "$gh_ranges" | jq -r '(.web + .api + .git)[]' | aggregate -q)
 
 # Resolve and add other allowed domains
@@ -117,7 +133,7 @@ for domain in \
             exit 1
         fi
         echo "Adding $ip for $domain"
-        ipset add allowed-domains "$ip"
+        ipset add allowed-domains "$ip" 2>/dev/null || true
     done < <(echo "$ips")
 done
 {%- if enable_python_uv %}
@@ -139,7 +155,7 @@ for domain in \
             exit 1
         fi
         echo "Adding $ip for $domain"
-        ipset add allowed-domains "$ip"
+        ipset add allowed-domains "$ip" 2>/dev/null || true
     done < <(echo "$ips")
 done
 {%- endif %}
@@ -224,11 +240,14 @@ iptables -A OUTPUT -j REJECT --reject-with icmp-admin-prohibited
 
 echo "Firewall configuration complete"
 echo "Verifying firewall rules..."
-if curl --connect-timeout 5 https://example.com >/dev/null 2>&1; then
-    echo "ERROR: Firewall verification failed - was able to reach https://example.com"
+
+# Verify blocked traffic using a direct IP (1.1.1.1) to avoid DNS issues
+# (container DNS may resolve blocked domains to 127.0.0.1, bypassing the firewall)
+if curl --connect-timeout 5 -s -o /dev/null https://1.1.1.1 2>/dev/null; then
+    echo "ERROR: Firewall verification failed - was able to reach https://1.1.1.1"
     exit 1
 else
-    echo "Firewall verification passed - unable to reach https://example.com as expected"
+    echo "Firewall verification passed - unable to reach https://1.1.1.1 as expected"
 fi
 
 # Verify GitHub API access
