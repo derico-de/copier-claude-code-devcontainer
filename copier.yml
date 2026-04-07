@@ -15,6 +15,11 @@ enable_python_uv:
   help: Enable Python UV setup (installs Python3, python3-venv, and UV package manager)?
   default: false
 
+enable_plone:
+  type: bool
+  help: Enable Plone support (allows dist.plone.org in firewall for version constraints)?
+  default: false
+
 enable_pnpm:
   type: bool
   help: Enable JavaScript pnpm setup (enables corepack and prepares pnpm)?
