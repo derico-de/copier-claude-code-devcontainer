@@ -13,7 +13,7 @@
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	},
 {% endif %}
-	"initializeCommand": "mkdir -p \"$HOME/.claude\"",
+	"initializeCommand": "mkdir -p \"$HOME/.claude\"{% if enable_plone %} \"$HOME/.copier-templates\" \"$HOME/.plonecli\"{% endif %}",
 	"runArgs": ["--cap-add=NET_ADMIN", "--cap-add=NET_RAW"],
 	"customizations": {
 		"vscode": {
@@ -47,7 +47,9 @@
 	"mounts": [
 		"source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
 		"source=claude-code-config-${devcontainerId},target=/home/node/.claude,type=volume",
-		"source=${localEnv:HOME}/.claude,target=/host-claude-config,type=bind,readonly"
+		"source=${localEnv:HOME}/.claude,target=/host-claude-config,type=bind,readonly"{% if enable_plone %},
+		"source=${localEnv:HOME}/.copier-templates,target=/home/node/.copier-templates,type=bind,readonly",
+		"source=${localEnv:HOME}/.plonecli,target=/home/node/.plonecli,type=bind,readonly"{% endif %}
 	],
 	"containerEnv": {
 		"CLAUDE_CONFIG_DIR": "/home/node/.claude",
