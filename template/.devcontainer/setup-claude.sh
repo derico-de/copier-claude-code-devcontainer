@@ -15,13 +15,6 @@ else
     echo "WARNING: Failed to download Claude Code installer, skipping"
 fi
 
-echo "Installing OpenCode..."
-if curl -fsSL -o "$TMPDIR/opencode-install.sh" https://opencode.ai/install; then
-    bash "$TMPDIR/opencode-install.sh"
-else
-    echo "WARNING: Failed to download OpenCode installer, skipping"
-fi
-
 # ---------------------------------------------------------------------------
 # Sync host's global Claude Code configuration (if available)
 # ---------------------------------------------------------------------------
@@ -166,4 +159,4 @@ node -e "
     console.log('  Wrote merged settings.json');
 "
 
-echo "Claude Code and OpenCode setup complete."
+echo "Claude Code setup complete."
