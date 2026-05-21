@@ -25,6 +25,11 @@ enable_pnpm:
   help: Enable JavaScript pnpm setup (enables corepack and prepares pnpm)?
   default: false
 
+enable_terminal_recording:
+  type: bool
+  help: Enable terminal recording tools (asciinema, ffmpeg, vhs, agg, ttyd) for scripted demos?
+  default: false
+
 extra_mounts:
   type: yaml
   help: |
