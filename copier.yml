@@ -17,7 +17,7 @@ enable_python_uv:
 
 enable_plone:
   type: bool
-  help: Enable Plone support (allows dist.plone.org in firewall for version constraints)?
+  help: Enable Plone support (installs plonecli, Python and uv; allows dist.plone.org and PyPI in firewall)?
   default: false
 
 enable_pnpm:

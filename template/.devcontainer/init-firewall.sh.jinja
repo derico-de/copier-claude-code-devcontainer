@@ -134,7 +134,7 @@ for domain in \
         ipset add allowed-domains "$ip" 2>/dev/null || true
     done < <(echo "$ips")
 done
-{%- if enable_python_uv %}
+{%- if enable_python_uv or enable_plone %}
 
 # PyPI (for UV package installation)
 for domain in \
