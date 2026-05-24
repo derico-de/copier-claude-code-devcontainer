@@ -4,12 +4,13 @@ set -euo pipefail
 WORKSPACE_FOLDER="$(cd "$(dirname "$0")" && pwd)"
 
 usage() {
-    echo "Usage: $0 {start|stop|rebuild|bash}"
+    echo "Usage: $0 {start|stop|recreate|rebuild|bash}"
     echo ""
-    echo "  start    Start the devcontainer"
-    echo "  stop     Stop the devcontainer (container preserved for fast restart)"
-    echo "  rebuild  Rebuild (no cache) and start the devcontainer"
-    echo "  bash     Open a bash shell inside the running devcontainer"
+    echo "  start     Start the devcontainer"
+    echo "  stop      Stop the devcontainer (container preserved for fast restart)"
+    echo "  recreate  Recreate the container to pick up mount/config changes (no image rebuild)"
+    echo "  rebuild   Rebuild (no cache) and start the devcontainer"
+    echo "  bash      Open a bash shell inside the running devcontainer"
     exit 1
 }
 
@@ -33,6 +34,11 @@ cmd_bash() {
     devcontainer exec --workspace-folder "$WORKSPACE_FOLDER" bash
 }
 
+cmd_recreate() {
+    echo "Recreating devcontainer (picks up mount/config changes; no image rebuild)..."
+    devcontainer up --workspace-folder "$WORKSPACE_FOLDER" --remove-existing-container
+}
+
 cmd_rebuild() {
     echo "Rebuilding devcontainer (no cache)..."
     devcontainer build --workspace-folder "$WORKSPACE_FOLDER" --no-cache
@@ -41,9 +47,10 @@ cmd_rebuild() {
 }
 
 case "${1:-}" in
-    start)   cmd_start ;;
-    stop)    cmd_stop ;;
-    rebuild) cmd_rebuild ;;
-    bash)    cmd_bash ;;
-    *)       usage ;;
+    start)    cmd_start ;;
+    stop)     cmd_stop ;;
+    recreate) cmd_recreate ;;
+    rebuild)  cmd_rebuild ;;
+    bash)     cmd_bash ;;
+    *)        usage ;;
 esac
