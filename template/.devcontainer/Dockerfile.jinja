@@ -130,7 +130,7 @@ ENV CHROME_PATH=/usr/bin/chromium
 ENV CHROMIUM_FLAGS="--no-sandbox --disable-gpu --disable-dev-shm-usage"
 
 USER node
-{%- if enable_python_uv or enable_plone %}
+{%- if enable_python_uv or enable_plone or enable_mistral_vibe %}
 
 # Install UV package manager
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -139,4 +139,9 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Install plonecli (Plone scaffolding CLI) as a global uv tool
 RUN $HOME/.local/bin/uv tool install plonecli
+{%- endif %}
+{%- if enable_mistral_vibe %}
+
+# Install Mistral Vibe CLI as a global uv tool (uv fetches a managed Python 3.12)
+RUN $HOME/.local/bin/uv tool install --python 3.12 mistral-vibe
 {%- endif %}

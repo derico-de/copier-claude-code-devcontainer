@@ -30,6 +30,11 @@ enable_terminal_recording:
   help: Enable terminal recording tools (asciinema, ffmpeg, vhs, agg, ttyd) for scripted demos?
   default: false
 
+enable_mistral_vibe:
+  type: bool
+  help: Enable Mistral Vibe CLI (installs the `vibe` coding agent via uv; allows api.mistral.ai and PyPI in firewall)?
+  default: false
+
 extra_mounts:
   type: yaml
   help: |
