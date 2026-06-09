@@ -7,6 +7,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 TMPDIR=$(mktemp -d)
 trap 'rm -rf "$TMPDIR"' EXIT
+{%- if 'claude code' in agents %}
 
 echo "Installing Claude Code (native)..."
 if curl -fsSL -o "$TMPDIR/claude-install.sh" https://claude.ai/install.sh; then
@@ -160,3 +161,7 @@ node -e "
 "
 
 echo "Claude Code setup complete."
+{%- else %}
+
+echo "Claude Code not selected, skipping Claude setup."
+{%- endif %}

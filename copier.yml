@@ -30,10 +30,15 @@ enable_terminal_recording:
   help: Enable terminal recording tools (asciinema, ffmpeg, vhs, agg, ttyd) for scripted demos?
   default: false
 
-enable_mistral_vibe:
-  type: bool
-  help: Enable Mistral Vibe CLI (installs the `vibe` coding agent via uv; allows api.mistral.ai and PyPI in firewall)?
-  default: false
+agents:
+  type: str
+  help: Which coding agent CLIs should be installed (and allowed through the firewall)?
+  multiselect: true
+  choices:
+    Claude Code: claude code
+    Mistral Vibe: mistral vibe
+    OpenCode: open code
+  validator: "{% if not agents %}Select at least one coding agent.{% endif %}"
 
 extra_mounts:
   type: yaml

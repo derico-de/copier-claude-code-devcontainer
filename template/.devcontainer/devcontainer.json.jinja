@@ -18,7 +18,9 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"anthropic.claude-code",
+{%- if 'claude code' in agents %}
+					"anthropic.claude-code",
+{%- endif %}
 				"dbaeumer.vscode-eslint",
 				"esbenp.prettier-vscode",
 				"eamodio.gitlens"{% if enable_python_uv %},
