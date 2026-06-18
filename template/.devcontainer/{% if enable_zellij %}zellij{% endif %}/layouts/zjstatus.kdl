@@ -1,0 +1,22 @@
+layout {
+    pane size=1 borderless=true {
+        plugin location="file:/home/node/.config/zellij/plugins/zjstatus.wasm" {
+            format_left   "{mode} #[fg=#89b4fa,bold]{session}"
+            format_center "{tabs}"
+            format_right  "#[fg=#6C7086,bold]{datetime}"
+            format_space  ""
+
+            mode_normal  "#[bg=#89b4fa,fg=#1e1e2e,bold] NORMAL "
+            mode_locked  "#[bg=#6C7086,fg=#1e1e2e,bold] LOCKED "
+            mode_tmux    "#[bg=#fab387,fg=#1e1e2e,bold] TMUX "
+
+            tab_normal   "#[fg=#6C7086] {name} "
+            tab_active   "#[fg=#1e1e2e,bg=#89b4fa,bold] {name} "
+
+            datetime        " {format} "
+            datetime_format "%Y-%m-%d %H:%M"
+            datetime_timezone "UTC"
+        }
+    }
+    pane
+}

@@ -124,6 +124,12 @@ for domain in \
 {%- if 'open code' in agents %}
     "opencode.ai" \
 {%- endif %}
+{%- if 'pi' in agents %}
+    "pi.dev" \
+    "api.anthropic.com" \
+    "api.openai.com" \
+    "generativelanguage.googleapis.com" \
+{%- endif %}
     "marketplace.visualstudio.com" \
     "vscode.blob.core.windows.net" \
     "update.code.visualstudio.com"; do

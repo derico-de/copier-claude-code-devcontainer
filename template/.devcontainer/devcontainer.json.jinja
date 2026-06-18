@@ -14,7 +14,7 @@
 	},
 {% endif %}
 	"initializeCommand": "mkdir -p \"$HOME/.claude\"{% if enable_plone %} \"$HOME/.copier-templates\"{% endif %}",
-	"runArgs": ["--cap-add=NET_ADMIN", "--cap-add=NET_RAW"],
+	"runArgs": ["--cap-add=NET_ADMIN", "--cap-add=NET_RAW"{% if 'pi' in agents %}, "--add-host=host.docker.internal:host-gateway"{% endif %}],
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -57,7 +57,8 @@
 		"CLAUDE_CONFIG_DIR": "/home/node/.claude",
 		"POWERLEVEL9K_DISABLE_GITSTATUS": "true",
 		"CHROME_PATH": "/usr/bin/chromium",
-		"PUPPETEER_EXECUTABLE_PATH": "/usr/bin/chromium"
+		"PUPPETEER_EXECUTABLE_PATH": "/usr/bin/chromium"{% if 'pi' in agents %},
+		"SEARXNG_URL": "{{ searxng_url }}"{% endif %}
 	},
 	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
 	"workspaceFolder": "/workspace",

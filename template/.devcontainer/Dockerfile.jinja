@@ -82,6 +82,21 @@ RUN ARCH=$(dpkg --print-architecture) && \
   sudo install -m 0755 /tmp/ttyd /usr/local/bin/ttyd && \
   rm /tmp/ttyd
 {%- endif %}
+{%- if enable_zellij %}
+
+# Zellij terminal multiplexer
+ARG ZELLIJ_VERSION=0.44.3
+RUN ARCH=$(dpkg --print-architecture) && \
+  case "$ARCH" in \
+    amd64) ZELLIJ_ARCH=x86_64-unknown-linux-musl ;; \
+    arm64) ZELLIJ_ARCH=aarch64-unknown-linux-musl ;; \
+    *) echo "Unsupported arch: $ARCH" && exit 1 ;; \
+  esac && \
+  wget -O /tmp/zellij.tar.gz "https://github.com/zellij-org/zellij/releases/download/v${ZELLIJ_VERSION}/zellij-${ZELLIJ_ARCH}.tar.gz" && \
+  tar -xzf /tmp/zellij.tar.gz -C /tmp && \
+  sudo install -m 0755 /tmp/zellij /usr/local/bin/zellij && \
+  rm /tmp/zellij /tmp/zellij.tar.gz
+{%- endif %}
 
 {%- if enable_pnpm %}
 
@@ -134,6 +149,27 @@ USER node
 
 # Install OpenCode CLI (coding agent) as a global npm package
 RUN npm install -g opencode-ai
+{%- endif %}
+{%- if 'pi' in agents %}
+
+# Install Pi coding agent (native installer)
+RUN curl -fsSL https://pi.dev/install.sh | sh
+
+# Add web_search/web_fetch tools to Pi (rpiv-web-tools); SearXNG provider is
+# wired up via the SEARXNG_URL env var set in devcontainer.json
+RUN pi install npm:@juicesharp/rpiv-web-tools
+{%- endif %}
+{%- if enable_zellij %}
+
+# Zellij status bar plugins (zjstatus + zj-status-bar) and a default config wiring zjstatus in
+ARG ZJSTATUS_VERSION=0.23.0
+ARG ZJ_STATUS_BAR_VERSION=0.3.0
+RUN mkdir -p "$HOME/.config/zellij/plugins" "$HOME/.config/zellij/layouts" && \
+  wget -O "$HOME/.config/zellij/plugins/zjstatus.wasm" \
+    "https://github.com/dj95/zjstatus/releases/download/v${ZJSTATUS_VERSION}/zjstatus.wasm" && \
+  wget -O "$HOME/.config/zellij/plugins/zj-status-bar.wasm" \
+    "https://github.com/cristiand391/zj-status-bar/releases/download/${ZJ_STATUS_BAR_VERSION}/zj-status-bar.wasm"
+COPY --chown=node:node zellij/ /home/node/.config/zellij/
 {%- endif %}
 {%- if enable_python_uv or enable_plone or 'mistral vibe' in agents %}
 

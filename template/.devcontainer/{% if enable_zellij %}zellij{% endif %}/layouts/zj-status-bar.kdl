@@ -1,0 +1,6 @@
+layout {
+    pane size=1 borderless=true {
+        plugin location="file:/home/node/.config/zellij/plugins/zj-status-bar.wasm"
+    }
+    pane
+}

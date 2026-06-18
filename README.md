@@ -39,10 +39,35 @@ You must select at least one.
 | **Claude Code** | native installer (`claude.ai/install.sh`) | `api.anthropic.com`, `claude.ai`, `sentry.io`, `statsig.com` |
 | **Mistral Vibe** | `uv tool install mistral-vibe` (managed Python 3.12) | `api.mistral.ai`, `codestral.mistral.ai`, PyPI |
 | **OpenCode** | `npm install -g opencode-ai` | `opencode.ai` |
+| **Pi** | native installer (`pi.dev/install.sh`) + `rpiv-web-tools` extension | `pi.dev`, `api.anthropic.com`, `api.openai.com`, `generativelanguage.googleapis.com` |
 
 Each agent needs its own API key at runtime (e.g. `MISTRAL_API_KEY` for Mistral
-Vibe). Only the agents you select are installed and allowed through the
-firewall; everything else stays blocked.
+Vibe). Pi is provider-agnostic, so the firewall opens the Anthropic, OpenAI, and
+Google endpoints; configure whichever provider/key you use. Only the agents you
+select are installed and allowed through the firewall; everything else stays
+blocked.
+
+#### Pi web tools + SearXNG
+
+When **Pi** is selected, the
+[`@juicesharp/rpiv-web-tools`](https://pi.dev/packages/@juicesharp/rpiv-web-tools)
+extension is installed (`pi install npm:@juicesharp/rpiv-web-tools`), adding
+`web_search` / `web_fetch` tools backed by [SearXNG](https://docs.searxng.org/).
+
+The template assumes SearXNG runs **on the Docker host** and wires the container
+to it:
+
+- the container gets `--add-host=host.docker.internal:host-gateway`, and
+- `SEARXNG_URL` is set from the `searxng_url` answer
+  (default `http://host.docker.internal:8099`).
+
+The host network is already allowed through the firewall, so no extra firewall
+rule is needed for the default host-local instance. Make sure your SearXNG
+instance listens on an interface reachable from the container (not only
+`127.0.0.1`) and has JSON output enabled (`search.formats: [html, json]` in
+`settings.yml`) — default installs ship with JSON disabled. If you point
+`searxng_url` at an external host instead, add that domain to
+`init-firewall.sh`.
 
 ### Other questions
 
@@ -54,4 +79,19 @@ firewall; everything else stays blocked.
 | `enable_plone` | Install `plonecli` + Python/uv and allow `dist.plone.org` and PyPI. |
 | `enable_pnpm` | Enable corepack and prepare `pnpm`. |
 | `enable_terminal_recording` | Install terminal recording tools (asciinema, ffmpeg, vhs, agg, ttyd). |
+| `enable_zellij` | Install the Zellij multiplexer with the `zjstatus` and `zj-status-bar` status-bar plugins (see below). |
 | `extra_mounts` | Extra devcontainer mount entries, preserved across `copier update`. |
+
+### Zellij status bar (`enable_zellij`)
+
+Installs the [Zellij](https://zellij.dev/) terminal multiplexer plus two
+status-bar plugins, [`zjstatus`](https://github.com/dj95/zjstatus) and
+[`zj-status-bar`](https://github.com/cristiand391/zj-status-bar). The plugin
+`.wasm` files are baked into the image at `~/.config/zellij/plugins/` and two
+ready-made layouts are shipped in `~/.config/zellij/layouts/`:
+
+- `zjstatus` (the default layout) — run `zellij`
+- `zj-status-bar` — run `zellij --layout zj-status-bar`
+
+On first launch each plugin prompts for permissions: focus the status pane and
+press `y`.

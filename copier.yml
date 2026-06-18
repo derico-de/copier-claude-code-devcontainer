@@ -30,6 +30,11 @@ enable_terminal_recording:
   help: Enable terminal recording tools (asciinema, ffmpeg, vhs, agg, ttyd) for scripted demos?
   default: false
 
+enable_zellij:
+  type: bool
+  help: Enable Zellij terminal multiplexer with zjstatus and zj-status-bar status bar plugins?
+  default: false
+
 agents:
   type: str
   help: Which coding agent CLIs should be installed (and allowed through the firewall)?
@@ -38,7 +43,17 @@ agents:
     Claude Code: claude code
     Mistral Vibe: mistral vibe
     OpenCode: open code
+    Pi: pi
   validator: "{% if not agents %}Select at least one coding agent.{% endif %}"
+
+searxng_url:
+  type: str
+  help: |
+    SearXNG base URL for the Pi rpiv-web-tools web_search provider.
+    The default points at a SearXNG instance running on the Docker host
+    (host.docker.internal is wired up automatically for the container).
+  default: "http://host.docker.internal:8099"
+  when: "{{ 'pi' in agents }}"
 
 extra_mounts:
   type: yaml
